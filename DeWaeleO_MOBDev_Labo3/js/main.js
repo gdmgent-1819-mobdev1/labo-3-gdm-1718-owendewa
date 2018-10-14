@@ -179,8 +179,8 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 				Math.sin(Δλ/2) * Math.sin(Δλ/2);
 		let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 		let d = document.getElementById("container__geo");
-		d.innerHTML = 'Uw match bevind zich op ' + R * c + ' Meter afstand';
-
+		let result = Math.round(R * c/1000);
+		d.innerHTML = 'Uw match bevind zich op ' + result + ' Kilometer afstand';
 	}
 	function getLocation() {
 		if (navigator.geolocation) {
@@ -221,7 +221,3 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 		}
 		});	*/
 	}
-	
-	
-	
-	
