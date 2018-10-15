@@ -132,8 +132,8 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 							// Met splice haal je uw element uit uw array
 							//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice 
 							like_array.splice(a,1);// splice het weg
-							localStorage.setItem("likes", JSON.stringify(like_array));// (Refresh) uw localstorage acher de splice
-							localStorage.setItem("dislikes", JSON.stringify(dislike_array));// stringyfy de binnengekregen data	
+							localStorage.setItem("likes", JSON.stringify(like_array).splice(1, -1));// (Refresh) uw localstorage acher de splice
+							localStorage.setItem("dislikes", JSON.stringify(dislike_array).splice(1, -1));// stringyfy de binnengekregen data	
 							console.log(dislike_array);
 						});
 					}
