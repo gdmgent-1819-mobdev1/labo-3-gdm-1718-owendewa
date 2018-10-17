@@ -1,6 +1,8 @@
+//localStorage.clear();
 let person_array = new Array(); // array voor de 10 mensen
 let like_array = new Array();
 let dislike_array = new Array();
+
 fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 	.then(function(response){
 		return response.json();// Json code terugsturen 
@@ -19,11 +21,11 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 				latitude:  person.location.coordinates.latitude
 			}
 			person_array.push(collection); // personen toevoegen aan de lege array person_array
-	
 		}
+	
 	localStorage.setItem("persons",JSON.stringify(person_array));
 	}
-	
+	getLocation();
 	create();// roep de create functie op
 	
 		function showPeople(){ // maak de functie showPeople om de opmaak van het tinder profiel te maken
@@ -45,19 +47,17 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 			let location = document.createElement('p'); // maak een p element aan
 			location.innerHTML = person_array[0].longitude + ' ' + person_array[0].latitude;// innerHTML van adress is de locatie uit object collection
 			location.className = "adress";// de p krijgt de classnaam adress
-			getLocation();
-			map();
 			div.appendChild(img);
 			div.appendChild(name);
 			div.appendChild(age);
 			div.appendChild(adress);
 			div.appendChild(location);
 			box.appendChild(div);
+			map();
 			
 		}
 		
 		showPeople(); // roep de functie showpeople
-		
 		function fetchLocal(){
 			if(person_array.length==1){
 				fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
@@ -190,11 +190,11 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 			container: 'map',
 			style: 'mapbox://styles/mapbox/streets-v9',
 			center: [person_array[0].longitude, person_array[0].latitude],
-			zoom:3
+			zoom:14
 		});
 		
 		map.on('load', function(){
-			let radius=80; //radius of the circle
+			let radius=50; //radius of the circle
 			map.addSource("geomarker", { //making a source for the radius
 				"type": "geojson",
 				"data": {
@@ -203,7 +203,7 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 					"type": "Feature",
 					"geometry": {
 					"type": "Point",
-					"coordinates": [people[index].lng, people[index].lat] 
+					"coordinates": [person_array[0].longitude, person_array[0].latitude] 
 					}
 				}]
 				}
@@ -214,7 +214,7 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 				"source": "geomarker",
 				"paint": {
 				"circle-radius": radius, //radius with the variable radius
-				"circle-color": "#3BBB87", //color
+				"circle-color": "#FF0000", //color
 				"circle-opacity": 0.5, //opacity
 				}
 			});
