@@ -46,7 +46,7 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 			location.innerHTML = person_array[0].longitude + ' ' + person_array[0].latitude;// innerHTML van adress is de locatie uit object collection
 			location.className = "adress";// de p krijgt de classnaam adress
 			getLocation();
-			Map();
+			map();
 			div.appendChild(img);
 			div.appendChild(name);
 			div.appendChild(age);
@@ -154,12 +154,7 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 					}
 				}
 			});
-	}).catch(function(error){
-		console.log('de data word niet weergegeven ' + error.message);
-	})
-	console.log(localStorage.getItem('persons'));
-
-	/////////// Geolocation ////////////
+			/////////// Geolocation ////////////
 	function degreesToRadians(degrees) {
 		return degrees * Math.PI / 180;
 	  }
@@ -189,7 +184,7 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 			x.innerHTML = "Geolocation is not supported by this browser.";
 		}
 	}
-	function Map(){
+	function map(){
 		mapboxgl.accessToken = 'pk.eyJ1Ijoib3dlbmRld2FlbGUiLCJhIjoiY2puOHAzZnRzNmo5MzN2bnhqNW53aDBicyJ9.7M-e8KcSjdnouRI2WH30JA';
 		var map = new mapboxgl.Map({
 			container: 'map',
@@ -198,26 +193,36 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 			zoom:3
 		});
 		
-	/*map.addLayer({
-		'id': mapid,
-		'type': 'circle',
-		'source':{
-			'type': 'geojson',
-			'data': {
-				'type': 'Feature',
-				'geometry': {
-				'type': 'Point',
-				'coordinates': [person_array[0].longitude, person_array[0].latitude],
+		map.on('load', function(){
+			let radius=80; //radius of the circle
+			map.addSource("geomarker", { //making a source for the radius
+				"type": "geojson",
+				"data": {
+				"type": "FeatureCollection",
+				"features": [{
+					"type": "Feature",
+					"geometry": {
+					"type": "Point",
+					"coordinates": [people[index].lng, people[index].lat] 
+					}
+				}]
 				}
-			},
-		},
-		'paint': {
-			'circle-color': color,
-			'circle-radius': {
-				'base': 10,
-				'stops': [[9,35], [12,40],[22,180]]
-			},
-			'circle-opacity': 0.5
-		}
-		});	*/
+			});
+			map.addLayer({ //displaying the radius of the circle
+				"id": "geomarker",
+				"type": "circle",
+				"source": "geomarker",
+				"paint": {
+				"circle-radius": radius, //radius with the variable radius
+				"circle-color": "#3BBB87", //color
+				"circle-opacity": 0.5, //opacity
+				}
+			});
+		});
 	}
+	}).catch(function(error){
+		console.log('de data word niet weergegeven ' + error.message);
+	})
+	console.log(localStorage.getItem('persons'));
+
+	
