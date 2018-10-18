@@ -8,45 +8,58 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 		return response.json();// Json code terugsturen 
 	})
 	.then(function(data){
+		create();// roep de create functie op
+		showPeople(); // roep de functie showpeople
+		fetchLocal();
+		document.querySelector('.container__buttons--like').addEventListener('click', function (){
+			like();
+		});
+		document.querySelector('.container__buttons--dislike').addEventListener('click', function(){ // zelfde systeem als de like knop
+			dislike();
+		});
+		document.querySelector('.container__lists--showLikes').addEventListener('click', function(){
+			showList();
+		});
+
+		///functions///
+		
 		function create(){
 			for(let i=0; i<10; i++){ // for loop voor 10 resultaten te krijgen
-			let person = data.results[i];
-			let collection = { // personen interpreteren als objecten 
-				name: person.name.first + ' ' + person.name.last,
-				picture: person.picture.large,
-				location: person.location.street + '<br> ' + person.location.city,
-				age: person.dob.age,
-				id: person.id.value,
-				longitude: person.location.coordinates.longitude ,
-				latitude:  person.location.coordinates.latitude
+				let person = data.results[i];
+				let collection = { // personen interpreteren als objecten 
+					name: person.name.first + ' ' + person.name.last,
+					picture: person.picture.large,
+					location: person.location.street + '<br> ' + person.location.city,
+					age: person.dob.age,
+					id: person.id.value,
+					longitude: person.location.coordinates.longitude ,
+					latitude:  person.location.coordinates.latitude
+				}
+				person_array.push(collection); // personen toevoegen aan de lege array person_array
 			}
-			person_array.push(collection); // personen toevoegen aan de lege array person_array
+			localStorage.setItem("persons",JSON.stringify(person_array));
 		}
-	
-	localStorage.setItem("persons",JSON.stringify(person_array));
-	}
-	getLocation();
-	create();// roep de create functie op
-	
+
 		function showPeople(){ // maak de functie showPeople om de opmaak van het tinder profiel te maken
 			let box = document.querySelector('#container__tinderBox');
 			let div = document.createElement('div'); // maak een div element aan
-			div.className ="container__tinderBox--info"; // div krijgt de classe info
+				div.className ="container__tinderBox--info"; // div krijgt de classe info
 			let img = document.createElement('img'); // maak een img element aan
-			img.src = person_array[0].picture; // img src instellen
-			img.className ="profilePic";// img krijgt de classe profilePic
+				img.src = person_array[0].picture; // img src instellen
+				img.className ="profilePic";// img krijgt de classe profilePic
+				img.draggable ="true";// img krijgt de classe profilePic
 			let name = document.createElement('h1'); // maak een h1 element  aan
-			name.innerHTML = person_array[0].name;// innerHTML van h1 is de name uit object collection
-			name.className ="name"; // de H1 krijgt de classnaam name
+				name.innerHTML = person_array[0].name;// innerHTML van h1 is de name uit object collection
+				name.className ="name"; // de H1 krijgt de classnaam name
 			let age = document.createElement('h2'); // maak een h2 element aan
-			age.innerHTML = person_array[0].age;// innerHTML van h2 is de leeftijd uit object collection
-			age.className = "age"; // de H12krijgt de classnaam age
+				age.innerHTML = person_array[0].age;// innerHTML van h2 is de leeftijd uit object collection
+				age.className = "age"; // de H12krijgt de classnaam age
 			let adress = document.createElement('p'); // maak een p element aan
-			adress.innerHTML = person_array[0].location;// innerHTML van adress is de locatie uit object collection
-			adress.className = "adress";// de p krijgt de classnaam adress
+				adress.innerHTML = person_array[0].location;// innerHTML van adress is de locatie uit object collection
+				adress.className = "adress";// de p krijgt de classnaam adress
 			let location = document.createElement('p'); // maak een p element aan
-			location.innerHTML = person_array[0].longitude + ' ' + person_array[0].latitude;// innerHTML van adress is de locatie uit object collection
-			location.className = "adress";// de p krijgt de classnaam adress
+				location.innerHTML = person_array[0].longitude + ' ' + person_array[0].latitude;// innerHTML van adress is de locatie uit object collection
+				location.className = "adress";// de p krijgt de classnaam adress
 			div.appendChild(img);
 			div.appendChild(name);
 			div.appendChild(age);
@@ -54,10 +67,8 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 			div.appendChild(location);
 			box.appendChild(div);
 			map();
-			
+			getLocation();
 		}
-		
-		showPeople(); // roep de functie showpeople
 		function fetchLocal(){
 			if(person_array.length==1){
 				fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
@@ -68,58 +79,57 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 				fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 			}else{
 				console.log(localStorage.getItem("persons"));
-			}};
-			fetchLocal();
-			
-			document.querySelector('.container__buttons--like').addEventListener('click', function (){
-				if(person_array.length<=1){ // controleer of er minder dan 1 of 1 persoon in de person_array zit
-					like_array.push(person_array[0]); //push de eerste person van de person_array in de like_array
-					person_array.shift();//haal de eerste persoon uit de person array
-					localStorage.removeItem("persons");// verwijder de eerste 10 personen uit de localstorage
-					location.reload(); // doe een reload waardoor de fetch opnieuw word aangespreken en we terug 10 personen binnen krijgen
-				}else if(localStorage.getItem("likes") !==null ){ // als de likes niet gelijk zijn aan null zowel als waarde als type
-						like_array = JSON.parse(localStorage.getItem("likes"));// parse de likes in de localstorage als objecten in de like array
-						like_array.push(person_array[0]);
-						person_array.shift();
-						document.getElementById('container__tinderBox').innerHTML="";// maakt de innerHTML leeg voor de volgende persoon
-						showPeople();// roep de functie show people op
-						localStorage.setItem("persons", JSON.stringify(person_array));// stringyfy de binnengekomen personen
-						localStorage.setItem("likes", JSON.stringify(like_array));// stingyfy de binnengekomen likes
-				}else{
-						like_array.push(person_array[0]);
-						person_array.shift();
-						document.getElementById('container__tinderBox').innerHTML="";
-						showPeople();
-						localStorage.setItem("persons", JSON.stringify(person_array));
-						localStorage.setItem("likes", JSON.stringify(like_array));
-					}
-				});
-			document.querySelector('.container__buttons--dislike').addEventListener('click', function(){ // zelfde systeem als de like knop
+			}
+		};
+		function like(){
+			if(person_array.length<=1){ // controleer of er minder dan 1 of 1 persoon in de person_array zit
+				like_array.push(person_array[0]); //push de eerste person van de person_array in de like_array
+				person_array.shift();//haal de eerste persoon uit de person array
+				localStorage.removeItem("persons");// verwijder de eerste 10 personen uit de localstorage
+				location.reload(); // doe een reload waardoor de fetch opnieuw word aangespreken en we terug 10 personen binnen krijgen
+			}else if(localStorage.getItem("likes") !==null ){ // als de likes niet gelijk zijn aan null zowel als waarde als type
+				like_array = JSON.parse(localStorage.getItem("likes"));// parse de likes in de localstorage als objecten in de like array
+				like_array.push(person_array[0]);
+				person_array.shift();
+				document.getElementById('container__tinderBox').innerHTML="";// maakt de innerHTML leeg voor de volgende persoon
+				showPeople();// roep de functie show people op
+				localStorage.setItem("persons", JSON.stringify(person_array));// stringyfy de binnengekomen personen
+				localStorage.setItem("likes", JSON.stringify(like_array));// stingyfy de binnengekomen likes
+			}else{
+				like_array.push(person_array[0]);
+				person_array.shift();
+				document.getElementById('container__tinderBox').innerHTML="";
+				showPeople();
+				localStorage.setItem("persons", JSON.stringify(person_array));
+				localStorage.setItem("likes", JSON.stringify(like_array));
+				}
+			}
+			function dislike(){
 				if(person_array.length<=1){
 					dislike_array.push(person_array[0]);
 					person_array.shift();
 					localStorage.removeItem("persons");
 					location.reload();
 				}else if(localStorage.getItem("dislikes") !==null){
-						dislike_array = JSON.parse(localStorage.getItem("dislikes"));
-						dislike_array.push(person_array[0]);
-						person_array.shift();
-						document.getElementById('container__tinderBox').innerHTML="";
-						showPeople();
-						console.log(person_array.length);
-						localStorage.setItem("persons", JSON.stringify(person_array));
-						localStorage.setItem("dislikes", JSON.stringify(dislike_array));
-					}else{
-						dislike_array.push(person_array[0]);
-						person_array.shift();
-						document.getElementById('container__tinderBox').innerHTML="";
-						showPeople();
-						console.log(person_array.length);
-						localStorage.setItem("persons", JSON.stringify(person_array));
-						localStorage.setItem("dislikes", JSON.stringify(dislike_array));
-					}
-				});
-			document.querySelector('.container__lists--showLikes').addEventListener('click', function(){
+					dislike_array = JSON.parse(localStorage.getItem("dislikes"));
+					dislike_array.push(person_array[0]);
+					person_array.shift();
+					document.getElementById('container__tinderBox').innerHTML="";
+					showPeople();
+					console.log(person_array.length);
+					localStorage.setItem("persons", JSON.stringify(person_array));
+					localStorage.setItem("dislikes", JSON.stringify(dislike_array));
+				}else{
+					dislike_array.push(person_array[0]);
+					person_array.shift();
+					document.getElementById('container__tinderBox').innerHTML="";
+					showPeople();
+					console.log(person_array.length);
+					localStorage.setItem("persons", JSON.stringify(person_array));
+					localStorage.setItem("dislikes", JSON.stringify(dislike_array));
+				}
+			}
+			function showList(){
 				document.querySelector('.container__LD--likeList').innerHTML = "";// maak de like list ieder keer opnieuw leeg zodat je niet twee keer dezelfde personen hebt
 
 				for(let i=0; i<like_array.length; i++){
@@ -132,8 +142,8 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 							// Met splice haal je uw element uit uw array
 							//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice 
 							like_array.splice(a,1);// splice het weg
-							localStorage.setItem("likes", JSON.stringify(like_array).splice(1, -1));// (Refresh) uw localstorage acher de splice
-							localStorage.setItem("dislikes", JSON.stringify(dislike_array).splice(1, -1));// stringyfy de binnengekregen data	
+							localStorage.setItem("likes", JSON.stringify(like_array));// (Refresh) uw localstorage acher de splice
+							localStorage.setItem("dislikes", JSON.stringify(dislike_array));// stringyfy de binnengekregen data	
 							console.log(dislike_array);
 						});
 					}
@@ -153,8 +163,43 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 						});
 					}
 				}
-			});
-			/////////// Geolocation ////////////
+			}
+			
+	///////D&D////////
+
+			document.addEventListener('dragstart', dragStart);
+			document.addEventListener('dragend', dragEnd);
+			document.addEventListener('drop', dragDrop);
+			document.addEventListener('dragover', dragOver);
+
+		
+
+			function dragStart(e){
+				console.log('start');
+				e.target.style.opacity = .3;
+				e.dataTransfer.setData("clickedButton", e.target.id);
+				e.dataTransfer.dropEffect = "move";
+			}
+			function dragEnd(e){
+				e.preventDefault();
+				console.log('end');
+				e.target.style.opacity = 1.0;
+			}
+			
+			function dragDrop(e) {
+				console.log('hallo');
+				e.preventDefault();
+				// only drop on dropzones
+				if (e.toElement.className === "likedropzone") {
+				  like();
+				}else{
+				dislike();
+				}
+			  }
+			  function dragOver(e) {
+				e.preventDefault();
+			  }
+	/////////// Geolocation ////////////
 	function degreesToRadians(degrees) {
 		return degrees * Math.PI / 180;
 	  }
@@ -180,8 +225,8 @@ fetch('https://randomuser.me/api/?results=10')// max 10 resultaten bij de fetch
 	function getLocation() {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(showPosition);
-		} else {
-			x.innerHTML = "Geolocation is not supported by this browser.";
+		}else{
+			alert('Geolocation not supported');
 		}
 	}
 	function map(){
